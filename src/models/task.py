@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from uuid import uuid4
 from .enum.task_status import TaskStatus
 
-
 class Task(BaseModel):
     uuid: str = Field(default_factory=lambda: str(uuid4()))
     title: str

@@ -1,8 +1,10 @@
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: board-api
-    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - .:/app
     ports:
@@ -21,6 +23,8 @@ services:
     volumes:
       - mongo_data:/data/db
     environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
       MONGO_INITDB_DATABASE: board
 
   mongo-express:

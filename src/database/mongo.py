@@ -8,8 +8,16 @@ class Mongo:
 mongo = Mongo()
 
 async def connect():
-    mongo.client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
-    mongo.db = mongo.client[os.getenv("MONGO_DB")]
+    user = os.getenv("MONGO_USER")
+    password = os.getenv("MONGO_PASSWORD")
+    host = os.getenv("MONGO_HOST", "localhost")
+    port = os.getenv("MONGO_PORT", "27017")
+    db_name = os.getenv("MONGO_DB")
+
+    mongo.client = AsyncIOMotorClient(
+        f"mongodb://{user}:{password}@{host}:{port}/{db_name}?authSource=admin"
+    )
+    mongo.db = mongo.client[db_name]
 
 async def close():
     mongo.client.close()

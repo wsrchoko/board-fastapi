@@ -4,7 +4,7 @@ from src.repositories.task import TaskRepository
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
-@router.post("/", response_model=TaskResponse, status_code=201)
+@router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(payload: CreateTaskSchema):
     return await TaskRepository.create(payload)
 
@@ -19,13 +19,13 @@ async def get_task(uuid: str):
 async def list_tasks():
     return await TaskRepository.get_all()
 
-@router.post("/{uuid}", response_model=TaskResponse, status_code=201)
+@router.post("/{uuid}", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def update_task(uuid:str, payload: UpdateTaskSchema):
     task = await TaskRepository.update(uuid, payload)
     if not task:
         raise HTTPException(404, "Task not found")
     return task
 
-@router.delete("/{uuid}", status_code=204)
+@router.delete("/{uuid}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(uuid: str):
     await TaskRepository.soft_delete(uuid)
