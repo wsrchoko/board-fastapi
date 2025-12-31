@@ -1,6 +1,7 @@
 from src.database.mongo import mongo
 from src.models import User
 from src.utils.security import hash_password, verify_password
+from src.utils.jwt import create_access_token
 
 class AuthRepository:
 
@@ -16,7 +17,13 @@ class AuthRepository:
         )
 
         await mongo.db.users.insert_one(user.model_dump())
-        return user
+
+        token = create_access_token({"uuid": user.uuid, "email": user.email})
+
+        return {
+            "user": user,
+            "access_token": token
+        }
 
     @staticmethod
     async def authenticate(email: str, password: str):
@@ -28,4 +35,9 @@ class AuthRepository:
         if not verify_password(password, user["password"]):
             return None
 
-        return user
+        token = create_access_token({"uuid": user["uuid"], "email": user["email"]})
+
+        return {
+            "user": user,
+            "access_token": token
+        }

@@ -24,3 +24,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     created_at: datetime
     updated_at: datetime
+
+class AuthResponse(BaseModel):
+    user: UserResponse
+    access_token: str

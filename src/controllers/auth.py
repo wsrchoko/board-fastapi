@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from src.schemas.user import (
     UserRegisterSchema,
     UserLoginSchema,
-    UserResponse
+    AuthResponse
 )
 from src.repositories.auth import AuthRepository
 from pymongo.errors import DuplicateKeyError
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post(
     "/register",
-    response_model=UserResponse,
+    response_model=AuthResponse,
     status_code=status.HTTP_201_CREATED
 )
 async def register(payload: UserRegisterSchema):
@@ -36,7 +36,7 @@ async def register(payload: UserRegisterSchema):
     return user
 
 @router.post("/login",
-    response_model=UserResponse,
+    response_model=AuthResponse,
     status_code=status.HTTP_201_CREATED
 )
 async def login(payload: UserLoginSchema):
