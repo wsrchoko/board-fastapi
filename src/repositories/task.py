@@ -5,13 +5,13 @@ from datetime import datetime, timezone
 
 class TaskRepository:
     @staticmethod
-    async def create(payload: CreateTaskSchema):
+    async def create(payload: CreateTaskSchema, user: dict):
         task = Task(
             title=payload.title,
             description=payload.description,
             assigned_to=None,
-            created_by="1",
-            updated_by="1"
+            created_by=user["uuid"],
+            updated_by=user["uuid"]
         )
 
         await mongo.db.tasks.insert_one(task.model_dump())
@@ -19,7 +19,7 @@ class TaskRepository:
         return task
     
     @staticmethod
-    async def get_by_uuid(uuid: str, trashed: bool = False):
+    async def get_by_uuid(uuid: str, user: dict, trashed: bool = False):
         query = {"uuid": uuid}
 
         if not trashed:
@@ -28,7 +28,7 @@ class TaskRepository:
         return await mongo.db.tasks.find_one(query)
 
     @staticmethod
-    async def get_all(trashed: bool = False):
+    async def get_all(user: dict, trashed: bool = False):
         query = {}
         if not trashed:
             query["deleted_at"] = None
@@ -36,7 +36,7 @@ class TaskRepository:
         return await mongo.db.tasks.find(query).to_list(100)
 
     @staticmethod
-    async def update(uuid: str, payload: CreateTaskSchema):
+    async def update(uuid: str, payload: CreateTaskSchema, user: dict):
         # Check if task exists
         task = await mongo.db.tasks.find_one({"uuid": uuid})
         if not task:
@@ -48,7 +48,7 @@ class TaskRepository:
             "status": payload.status,
             "assigned_to": payload.assigned_to,
             "updated_at": datetime.now(timezone.utc),
-            "updated_by": "1"
+            "updated_by": user["uuid"]
         }
 
         await mongo.db.tasks.update_one(
@@ -60,11 +60,11 @@ class TaskRepository:
         return await mongo.db.tasks.find_one({"uuid": uuid})
 
     @staticmethod
-    async def soft_delete(uuid: str):
+    async def soft_delete(uuid: str, user: dict):
         await mongo.db.tasks.update_one(
             {"uuid": uuid},
             {"$set": {
                 "deleted_at": datetime.now(timezone.utc),
-                "deleted_by": "1"
+                "deleted_by": user["uuid"]
             }}
         )

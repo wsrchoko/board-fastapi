@@ -23,7 +23,7 @@ async def register(payload: UserRegisterSchema):
         )
 
     try:
-        user = await AuthRepository.create_user(
+        data = await AuthRepository.create_user(
             email=payload.email,
             password=payload.password
         )
@@ -33,22 +33,22 @@ async def register(payload: UserRegisterSchema):
             detail="Email already registered"
         )
 
-    return user
+    return data
 
 @router.post("/login",
     response_model=AuthResponse,
     status_code=status.HTTP_201_CREATED
 )
 async def login(payload: UserLoginSchema):
-    user = await AuthRepository.authenticate(
+    data = await AuthRepository.authenticate(
         email=payload.email,
         password=payload.password
     )
 
-    if not user:
+    if not data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"
         )
 
-    return user
+    return data

@@ -6,7 +6,7 @@ from src.utils.jwt import create_access_token
 class AuthRepository:
 
     @staticmethod
-    async def get_by_email(email: str):
+    async def get_by_email(email: str) -> User | None:
         return await mongo.db.users.find_one({"email": email})
 
     @staticmethod
